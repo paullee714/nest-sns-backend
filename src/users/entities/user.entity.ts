@@ -1,1 +1,55 @@
-export class User {}
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+@Entity({
+  name: 'users',
+  orderBy: {
+    id: 'ASC',
+  },
+})
+export class User {
+  /**
+   * User Entity
+   */
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  username: string;
+
+  @Column({ nullable: false })
+  password: string;
+
+  @Column({ nullable: true })
+  phoneNumber: string;
+
+  @Column({ nullable: true })
+  email: string;
+
+  @Column({ nullable: true })
+  githubLink: string;
+
+  @Column()
+  bio: string;
+
+  @Column({ default: false })
+  isAdmin: boolean;
+
+  @Column({ default: true })
+  isActive: boolean;
+
+  @CreateDateColumn({ nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    nullable: false,
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
+  updatedAt: Date;
+}
