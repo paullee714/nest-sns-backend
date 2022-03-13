@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity({
   name: 'users',
@@ -34,7 +36,7 @@ export class User {
   @Column({ nullable: true })
   githubLink: string;
 
-  @Column()
+  @Column({ nullable: true })
   bio: string;
 
   @Column({ default: false })
@@ -52,4 +54,10 @@ export class User {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updatedAt: Date;
+
+  @BeforeInsert()
+  async setPassword(password: string) {
+    const seed = await bcrypt.genSalt();
+    this.password = await bcrypt.hash(password || this.password, seed);
+  }
 }
