@@ -5,7 +5,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import * as moment from "moment";
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -14,6 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private jwtService: JwtService
   ) { }
 
 
@@ -37,8 +37,11 @@ export class UsersService {
     const passwordCorrect = await user.checkPassword(loginUserDto.password);
     if (!passwordCorrect) {
       return false;
-    } else {
-      return true;
+    }
+
+    const payload = { username: user.username, sub: user.id, isAdmin: user.isAdmin };
+    return {
+      access_token: this.jwtService.sign(payload),
     }
 
   }
