@@ -7,6 +7,7 @@ import {
   BeforeInsert,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { InternalServerErrorException } from '@nestjs/common';
 
 @Entity({
   name: 'users',
@@ -59,5 +60,15 @@ export class User {
   async setPassword(password: string) {
     const seed = await bcrypt.genSalt();
     this.password = await bcrypt.hash(password || this.password, seed);
+  }
+
+  async checkPassword(aPassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(aPassword, this.password);
+    } catch (e) {
+      console.log(e);
+      throw new InternalServerErrorException();
+      return false;
+    }
   }
 }
